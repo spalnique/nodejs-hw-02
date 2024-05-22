@@ -41,7 +41,6 @@ export function setupServer() {
         message:
           'Wrong id. Contact id has to be of 24 alphanumerical symbols length',
       });
-      return;
     }
 
     const contact = await getContactById(id);
@@ -51,7 +50,6 @@ export function setupServer() {
         status: 404,
         message: `There is no contact with such id: ${id}`,
       });
-      return;
     }
 
     res.status(200).json({
