@@ -25,13 +25,25 @@ export function setupServer() {
     const contacts = await getAllContacts();
     res.status(200).json({
       status: 200,
-      message: 'Successfully found contacts!',
+      message: contacts.length
+        ? 'Successfully found contacts!'
+        : 'No contacts were found.',
       data: contacts,
     });
   });
 
   app.get('/contacts/:id', async (req, res) => {
     const { id } = req.params;
+
+    if (id.length !== 24) {
+      res.status(400).json({
+        status: 400,
+        message:
+          'Wrong id. Contact id has to be of 24 alphanumerical symbols length',
+      });
+      return;
+    }
+
     const contact = await getContactById(id);
 
     if (!contact) {
