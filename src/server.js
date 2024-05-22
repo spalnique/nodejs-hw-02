@@ -26,6 +26,7 @@ export function setupServer() {
   app.get('/contacts/:id', contactByIdController);
 
   app.use('*', notFoundHandler);
+
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
