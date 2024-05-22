@@ -1,3 +1,5 @@
+import { getContactById } from '../services/contacts.js';
+
 export const contactByIdController = async (req, res) => {
   const { id } = req.params;
 
