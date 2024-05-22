@@ -43,17 +43,18 @@ export function setupServer() {
       });
     } else {
       const contact = await getContactById(id);
-
-      contact
-        ? res.status(200).json({
-            status: 200,
-            message: `Successfully found contact with id ${id}`,
-            data: contact,
-          })
-        : res.status(404).json({
-            status: 404,
-            message: `There is no contact with such id: ${id}`,
-          });
+      if (contact === null) {
+        res.status(404).json({
+          status: 404,
+          message: `There is no contact with such id: ${id}`,
+        });
+      } else {
+        res.status(200).json({
+          status: 200,
+          message: `Successfully found contact with id ${id}`,
+          data: contact,
+        });
+      }
     }
   });
 
