@@ -41,22 +41,20 @@ export function setupServer() {
         message:
           'Wrong id. Contact id has to be of 24 alphanumerical symbols length',
       });
+    } else {
+      const contact = await getContactById(id);
+
+      contact
+        ? res.status(200).json({
+            status: 200,
+            message: `Successfully found contact with id ${id}`,
+            data: contact,
+          })
+        : res.status(404).json({
+            status: 404,
+            message: `There is no contact with such id: ${id}`,
+          });
     }
-
-    const contact = await getContactById(id);
-
-    if (!contact) {
-      res.status(404).json({
-        status: 404,
-        message: `There is no contact with such id: ${id}`,
-      });
-    }
-
-    res.status(200).json({
-      status: 200,
-      message: `Successfully found contact with id ${id}`,
-      data: contact,
-    });
   });
 
   app.use('*', (req, res) => {
