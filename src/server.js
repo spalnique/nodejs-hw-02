@@ -3,9 +3,9 @@ import cors from 'cors';
 import pino from 'pino-http';
 import { env } from './utils/env.js';
 import { ENV_VARS } from './constants/index.js';
-import { contactByIdController } from './controllers/contactByIdController.js';
-import { allContactsController } from './controllers/allContactsController.js';
+import { getContactByIdController } from './controllers/getContactByIdController.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import { getAllContactsController } from './controllers/getAllContactsController.js';
 
 export function setupServer() {
   const app = express();
@@ -22,8 +22,8 @@ export function setupServer() {
   app.use(cors());
   app.use(express.json());
 
-  app.get('/contacts', allContactsController);
-  app.get('/contacts/:id', contactByIdController);
+  app.get('/contacts', getAllContactsController);
+  app.get('/contacts/:id', getContactByIdController);
 
   app.use('*', notFoundHandler);
 
