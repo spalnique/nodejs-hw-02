@@ -3,9 +3,9 @@ import cors from 'cors';
 import pino from 'pino-http';
 import { env } from './utils/env.js';
 import { ENV_VARS } from './constants/index.js';
-import { getContactByIdController } from './controllers/getContactByIdController.js';
+import router from './routers/contacts.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
-import { getAllContactsController } from './controllers/getAllContactsController.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 export function setupServer() {
   const app = express();
@@ -20,12 +20,15 @@ export function setupServer() {
   );
 
   app.use(cors());
-  app.use(express.json());
-
-  app.get('/contacts', getAllContactsController);
-  app.get('/contacts/:id', getContactByIdController);
-
+  app.use(
+    express.json({
+      type: ['application/json', 'application/vnd.api+json'],
+      limit: '100kb',
+    }),
+  );
+  app.use(router);
   app.use('*', notFoundHandler);
+  app.use(errorHandler);
 
   app.listen(PORT, () => {
     console.log(`Server is running at ${new URL(`http://localhost:${PORT}/`)}`);
