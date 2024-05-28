@@ -2,11 +2,17 @@ import { isHttpError } from 'http-errors';
 
 export const errorHandler = (err, req, res, next) => {
   if (isHttpError(err)) {
-    res.status(err.status).json({
+    const responseBody = {
       status: err.status,
       message: err.name,
       data: err,
-    });
+    };
+
+    if (err.errors) {
+      responseBody.errors = err.errors;
+    }
+
+    res.status(err.status).json(responseBody);
     return;
   }
 

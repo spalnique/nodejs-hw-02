@@ -18,5 +18,3 @@ export const patchContactSchema = Joi.object({
   isFavourite: Joi.boolean(),
   contactType: Joi.string().valid('work', 'home', 'personal'),
 });
-
-export const contactsData = Joi.array(Joi.object(createContactSchema));
