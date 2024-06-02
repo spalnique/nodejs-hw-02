@@ -26,7 +26,7 @@ export function setupServer() {
       limit: '100kb',
     }),
   );
-  app.use(router);
+  app.use('/contacts', router);
   app.use('*', notFoundHandler);
   app.use(errorHandler);
 
