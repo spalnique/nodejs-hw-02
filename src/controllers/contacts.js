@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import { isValidObjectId } from 'mongoose';
 import {
   createContact,
   deleteContact,
@@ -19,7 +20,7 @@ export const getAllContactsController = async (req, res, next) => {
     return;
   }
 
-  res.status(200).json({
+  res.json({
     status: 200,
     message: 'Successfully found contacts!',
     data: contacts,
@@ -29,7 +30,7 @@ export const getAllContactsController = async (req, res, next) => {
 export const getContactByIdController = async (req, res, next) => {
   const { id } = req.params;
 
-  if (id.length !== 24) {
+  if (!isValidObjectId(id)) {
     next(
       createHttpError(
         400,
@@ -46,7 +47,7 @@ export const getContactByIdController = async (req, res, next) => {
     return;
   }
 
-  res.status(200).json({
+  res.json({
     status: 200,
     message: `Successfully found contact with id ${id}`,
     data: contact,
@@ -77,6 +78,17 @@ export const createContactController = async (req, res, next) => {
 
 export const deleteContactController = async (req, res, next) => {
   const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    next(
+      createHttpError(
+        400,
+        'Wrong id. Contact id has to be of 24 alphanumerical symbols length.',
+      ),
+    );
+    return;
+  }
+
   const contact = await deleteContact(id);
 
   if (!contact) {
@@ -84,7 +96,10 @@ export const deleteContactController = async (req, res, next) => {
     return;
   }
 
-  res.status(204).send();
+  res.json({
+    status: 200,
+    message: `Contact "${contact.name}" has been deleted.`,
+  });
 };
 
 export const patchContactController = async (req, res) => {
@@ -93,9 +108,19 @@ export const patchContactController = async (req, res) => {
     params: { id },
   } = req;
 
-  const result = await updateContact(id, body);
+  if (!isValidObjectId(id)) {
+    next(
+      createHttpError(
+        400,
+        'Wrong id. Contact id has to be of 24 alphanumerical symbols length.',
+      ),
+    );
+    return;
+  }
 
-  if (!result) {
+  const contact = await updateContact(id, body);
+
+  if (!contact) {
     next(createHttpError(404, 'Contact not found'));
     return;
   }
@@ -103,6 +128,6 @@ export const patchContactController = async (req, res) => {
   res.json({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: result.student,
+    data: contact.contact.value,
   });
 };

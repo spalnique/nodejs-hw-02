@@ -9,11 +9,10 @@ const contactSchema = new Schema(
     contactType: {
       type: String,
       enum: ['work', 'home', 'personal'],
-      required: true,
       default: 'personal',
     },
   },
   { timestamps: true, versionKey: false },
 );
 
-export const ContactsCollection = model('contacts', contactSchema);
+export const ContactsCollection = model('contact', contactSchema);
