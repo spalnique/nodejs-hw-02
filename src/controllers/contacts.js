@@ -21,7 +21,9 @@ export const getAllContactsController = async (req, res, next) => {
 };
 
 export const getContactByIdController = async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    params: { id },
+  } = req;
 
   if (!isValidObjectId(id)) {
     next(
@@ -89,10 +91,7 @@ export const deleteContactController = async (req, res, next) => {
     return;
   }
 
-  res.json({
-    status: 200,
-    message: `Contact "${contact.name}" has been deleted.`,
-  });
+  res.status(204).send();
 };
 
 export const patchContactController = async (req, res) => {
@@ -118,9 +117,13 @@ export const patchContactController = async (req, res) => {
     return;
   }
 
+  const {
+    contact: { value: patchedContact },
+  } = contact;
+
   res.json({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: contact.contact.value,
+    data: patchedContact,
   });
 };
