@@ -5,15 +5,14 @@ import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 export const getAllContacts = async ({
   page = 1,
   perPage = 3,
-  sortBy = KEYS_OF_CONTACT.name,
+  sortBy = KEYS_OF_CONTACT._id,
   sortOrder = SORT_ORDER.ASC,
   filter = {},
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const contactsQuery = await ContactsCollection.find();
-
+  const contactsQuery = ContactsCollection.find();
   const contactsCount = await ContactsCollection.find()
     .merge(contactsQuery)
     .countDocuments();
@@ -43,8 +42,5 @@ export const updateContact = async (id, payload, options = {}) => {
   });
 
   if (!rawResult || !rawResult.value) return null;
-  return {
-    contact: rawResult,
-    isNew: Boolean(rawResult?.lastErrorObject?.upserted),
-  };
+  return rawResult.value;
 };
