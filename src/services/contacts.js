@@ -14,7 +14,6 @@ export const updateContact = async (id, payload, options = {}) => {
     includeResultMetadata: true,
     ...options,
   });
-
   if (!rawResult || !rawResult.value) return null;
   return rawResult.value;
 };
