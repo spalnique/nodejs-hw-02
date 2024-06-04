@@ -94,7 +94,7 @@ export const deleteContactController = async (req, res, next) => {
   res.status(204).send();
 };
 
-export const patchContactController = async (req, res) => {
+export const patchContactController = async (req, res, next) => {
   const {
     body,
     params: { id },
@@ -117,13 +117,9 @@ export const patchContactController = async (req, res) => {
     return;
   }
 
-  const {
-    contact: { value: patchedContact },
-  } = contact;
-
   res.json({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: patchedContact,
+    data: contact,
   });
 };
