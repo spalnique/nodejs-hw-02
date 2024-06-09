@@ -5,3 +5,19 @@ export const ENV_VARS = {
   MONGODB_URL: 'MONGODB_URL',
   MONGODB_DB: 'MONGODB_DB',
 };
+
+export const SORT_ORDER = {
+  ASC: 'asc',
+  DESC: 'desc',
+};
+
+export const KEYS_OF_CONTACT = {
+  _id: '_id',
+  name: 'name',
+  phoneNumber: 'phoneNumber',
+  email: 'email',
+  isFavourite: 'isFavourite',
+  contactType: 'contactType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+};

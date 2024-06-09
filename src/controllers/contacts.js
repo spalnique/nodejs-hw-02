@@ -1,5 +1,4 @@
 import createHttpError from 'http-errors';
-import { isValidObjectId } from 'mongoose';
 import {
   createContact,
   deleteContact,
@@ -7,15 +6,26 @@ import {
   getContactById,
   updateContact,
 } from '../services/contacts.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 export const getAllContactsController = async (req, res, next) => {
-  const contacts = await getAllContacts();
+  const { page, perPage } = parsePaginationParams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  const filter = parseFilterParams(req.query);
+
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
 
   res.json({
     status: 200,
-    message: contacts.length
-      ? 'Successfully found contacts!'
-      : 'No contacts were found.',
+    message: 'Successfully found contacts!',
     data: contacts,
   });
 };
@@ -24,16 +34,6 @@ export const getContactByIdController = async (req, res, next) => {
   const {
     params: { id },
   } = req;
-
-  if (!isValidObjectId(id)) {
-    next(
-      createHttpError(
-        400,
-        'Wrong id. Contact id has to be of 24 alphanumerical symbols length',
-      ),
-    );
-    return;
-  }
 
   const contact = await getContactById(id);
 
@@ -54,16 +54,6 @@ export const createContactController = async (req, res, next) => {
 
   const contact = await createContact(body);
 
-  if (!contact) {
-    next(
-      createHttpError(
-        400,
-        "Couldn't create new contact. 'name' and/or 'phoneNumber' properties are missing",
-      ),
-    );
-    return;
-  }
-
   res.status(201).json({
     status: 201,
     message: `Successfully created a contact!`,
@@ -73,16 +63,6 @@ export const createContactController = async (req, res, next) => {
 
 export const deleteContactController = async (req, res, next) => {
   const { id } = req.params;
-
-  if (!isValidObjectId(id)) {
-    next(
-      createHttpError(
-        400,
-        'Wrong id. Contact id has to be of 24 alphanumerical symbols length.',
-      ),
-    );
-    return;
-  }
 
   const contact = await deleteContact(id);
 
@@ -99,16 +79,6 @@ export const patchContactController = async (req, res, next) => {
     body,
     params: { id },
   } = req;
-
-  if (!isValidObjectId(id)) {
-    next(
-      createHttpError(
-        400,
-        'Wrong id. Contact id has to be of 24 alphanumerical symbols length.',
-      ),
-    );
-    return;
-  }
 
   const contact = await updateContact(id, body);
 
