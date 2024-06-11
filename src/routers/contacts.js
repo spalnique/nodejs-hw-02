@@ -14,9 +14,11 @@ import {
   patchContactSchema,
 } from '../validation/contacts.js';
 import { validateMongoId } from '../middlewares/validateId.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const contactsRouter = Router();
 
+contactsRouter.use(authenticate);
 contactsRouter.use('/:someId', validateMongoId('someId'));
 contactsRouter.get('/', ctrlWrapper(getAllContactsController));
 contactsRouter.get('/:id', ctrlWrapper(getContactByIdController));

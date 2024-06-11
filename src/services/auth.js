@@ -19,6 +19,9 @@ const createUserSession = () => {
 };
 
 export const registerUser = async (payload) => {
+  const isEmailInUse = await UsersCollection.findOne({ email: payload.email });
+  if (isEmailInUse) throw createHttpError(409, 'Email is already in use');
+
   const encryptedPassword = await bcrypt.hash(payload.password, 10);
 
   return await UsersCollection.create({
@@ -36,11 +39,10 @@ export const loginUser = async (payload) => {
 
   await SessionsCollection.deleteOne({ _id: user._id });
 
-  const userSession = createUserSession();
-
-  const session = { userId: user._id, ...userSession };
-
-  return await SessionsCollection.create(session);
+  return await SessionsCollection.create({
+    userId: user._id,
+    ...createUserSession(),
+  });
 };
 
 export const logoutUser = async (sessionId) => {
@@ -55,13 +57,16 @@ export const refreshUserSession = async ({ sessionId, refreshToken }) => {
 
   if (!session) throw createHttpError(401, 'Session not found');
 
-  const isExpired = new Date() > new Date(session.refreshTokenValidUntil);
-  if (isExpired) throw createHttpError(401, 'Session token expired');
+  const { userId, refreshTokenValidUntil } = session;
 
-  const newSession = createUserSession();
+  const isRefreshTokenExpired = new Date() > new Date(refreshTokenValidUntil);
+  if (isRefreshTokenExpired)
+    throw createHttpError(401, 'Session token expired');
+
+  await SessionsCollection.deleteOne({ _id: sessionId });
 
   return await SessionsCollection.create({
-    userId: session.userId,
-    ...newSession,
+    userId,
+    ...createUserSession(),
   });
 };
