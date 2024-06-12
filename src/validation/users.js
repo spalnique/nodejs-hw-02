@@ -7,11 +7,16 @@ export const registerUserSchema = Joi.object({
     .pattern(
       /^[a-z._0-9]+@(?!yandex|mail|bk|list|tut|inbox|rambler)[a-z]+\.(?!ru$|by$)[a-z]{2,}$/,
     )
-    .required(),
+    .required()
+    .messages({ 'string.pattern.base': 'Mordor emails are not accepted.' }),
   password: Joi.string()
     .min(8)
     .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$/)
-    .required(),
+    .required()
+    .messages({
+      'string.pattern.base':
+        'Password must contain at least one small and one capital letters.',
+    }),
 });
 
 export const loginUserSchema = Joi.object({
