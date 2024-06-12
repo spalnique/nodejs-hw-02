@@ -3,19 +3,9 @@ import {
   logoutUser,
   refreshUserSession,
   registerUser,
+  updateUserData,
 } from '../services/auth.js';
-import { ONE_DAY } from '../constants/index.js';
-
-const setupSession = (res, session) => {
-  res.cookie('refreshToken', session.refreshToken, {
-    httpOnly: true,
-    expires: new Date(Date.now() + ONE_DAY),
-  });
-  res.cookie('sessionId', session._id, {
-    httpOnly: true,
-    expires: new Date(Date.now() + ONE_DAY),
-  });
-};
+import { setupSession } from '../utils/setupSession.js';
 
 export const registerUserController = async (req, res, next) => {
   const { body } = req;
@@ -70,4 +60,31 @@ export const refreshUserSessionController = async (req, res, next) => {
     message: 'Successfully refreshed a session!',
     data: { accessToken },
   });
+};
+
+export const updateUserDataController = async (req, res, next) => {
+  const {
+    body,
+    user: { _id: userId },
+    cookies: { sessionId },
+  } = req;
+
+  const updatedUser = await updateUserData(body, userId);
+
+  updatedUser.password = "It's a secret";
+
+  res.json({
+    status: 200,
+    message:
+      body.newPassword || body.newEmail
+        ? 'Successfully updated user data! Please, login with your new credentials'
+        : 'Successfully updated user data!',
+    data: updatedUser,
+  });
+
+  if (body.newPassword || body.newEmail) {
+    await logoutUser(sessionId);
+    res.clearCookie('sessionId');
+    res.clearCookie('refreshToken');
+  }
 };

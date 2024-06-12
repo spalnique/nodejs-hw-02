@@ -23,3 +23,21 @@ export const loginUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
+
+export const updateUserDataSchema = Joi.object({
+  password: Joi.string().required(),
+  newName: Joi.string().min(3).max(30),
+  newEmail: Joi.string()
+    .email()
+    .pattern(
+      /^[a-z._0-9]+@(?!yandex|mail|bk|list|tut|inbox|rambler)[a-z]+\.(?!ru$|by$)[a-z]{2,}$/,
+    )
+    .messages({ 'string.pattern.base': 'Mordor emails are not accepted.' }),
+  newPassword: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$/)
+    .messages({
+      'string.pattern.base':
+        'Password must contain at least one small and one capital letters.',
+    }),
+});
