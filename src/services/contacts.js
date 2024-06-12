@@ -8,11 +8,12 @@ export const getAllContacts = async ({
   sortBy = KEYS_OF_CONTACT._id,
   sortOrder = SORT_ORDER.ASC,
   filter = {},
+  userId,
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const contactsQuery = ContactsCollection.find();
+  const contactsQuery = ContactsCollection.find({ userId });
 
   if (filter.contactType)
     contactsQuery.where(KEYS_OF_CONTACT.contactType).equals(filter.contactType);
@@ -34,18 +35,24 @@ export const getAllContacts = async ({
   return { data: contacts, ...paginationData };
 };
 
-export const getContactById = (id) => ContactsCollection.findById(id);
+export const getContactById = (_id, userId) =>
+  ContactsCollection.findOne({ _id, userId });
 
 export const createContact = (payload) => ContactsCollection.create(payload);
 
-export const deleteContact = (id) => ContactsCollection.findByIdAndDelete(id);
+export const deleteContact = (_id, userId) =>
+  ContactsCollection.findOneAndDelete({ _id, userId });
 
-export const updateContact = async (id, payload, options = {}) => {
-  const rawResult = await ContactsCollection.findByIdAndUpdate(id, payload, {
-    new: true,
-    includeResultMetadata: true,
-    ...options,
-  });
+export const updateContact = async (_id, userId, payload, options = {}) => {
+  const rawResult = await ContactsCollection.findOneAndUpdate(
+    { _id, userId },
+    payload,
+    {
+      new: true,
+      includeResultMetadata: true,
+      ...options,
+    },
+  );
   if (!rawResult || !rawResult.value) return null;
   return rawResult.value;
 };

@@ -5,7 +5,7 @@ export const registerUserSchema = Joi.object({
   email: Joi.string()
     .email()
     .pattern(
-      /^[a-z._]+@(?!yandex|mail|bk|list|tut|inbox|rambler)[a-z]+\.(?!ru$|by$)[a-z]{2,}$/,
+      /^[a-z._0-9]+@(?!yandex|mail|bk|list|tut|inbox|rambler)[a-z]+\.(?!ru$|by$)[a-z]{2,}$/,
     )
     .required(),
   password: Joi.string()
