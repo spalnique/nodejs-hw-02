@@ -82,7 +82,7 @@ export const updateUserData = async (payload, userId) => {
     updatePayload.password = encryptedPassword;
   }
 
-  const updateResult = await UsersCollection.findOneAndUpdate(
+  return await UsersCollection.findOneAndUpdate(
     { _id: userId },
     updatePayload,
     {
@@ -90,6 +90,4 @@ export const updateUserData = async (payload, userId) => {
       includeResultMetadata: true,
     },
   );
-
-  return updateResult.value;
 };

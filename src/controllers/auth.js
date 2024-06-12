@@ -69,9 +69,7 @@ export const updateUserDataController = async (req, res, next) => {
     cookies: { sessionId },
   } = req;
 
-  const updatedUser = await updateUserData(body, userId);
-
-  updatedUser.password = "It's a secret";
+  await updateUserData(body, userId);
 
   res.json({
     status: 200,
@@ -79,7 +77,6 @@ export const updateUserDataController = async (req, res, next) => {
       body.newPassword || body.newEmail
         ? 'Successfully updated user data! Please, login with your new credentials'
         : 'Successfully updated user data!',
-    data: updatedUser,
   });
 
   if (body.newPassword || body.newEmail) {
