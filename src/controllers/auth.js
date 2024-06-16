@@ -11,7 +11,7 @@ export const registerUserController = async (req, res, next) => {
   const { body } = req;
   const user = await registerUser(body);
 
-  res.json({
+  res.status(201).json({
     status: 201,
     message: 'Successfully registered new user!',
     data: user,
