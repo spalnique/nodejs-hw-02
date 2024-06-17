@@ -15,10 +15,10 @@ export const getAllContacts = async ({
 
   const contactsQuery = ContactsCollection.find({ userId });
 
-  if (filter.contactType)
+  if (filter.hasOwnProperty(KEYS_OF_CONTACT.contactType))
     contactsQuery.where(KEYS_OF_CONTACT.contactType).equals(filter.contactType);
 
-  if (typeof filter.isFavourite === 'boolean')
+  if (filter.hasOwnProperty(KEYS_OF_CONTACT.isFavourite))
     contactsQuery.where(KEYS_OF_CONTACT.isFavourite).equals(filter.isFavourite);
 
   const [contactsCount, contacts] = await Promise.all([
