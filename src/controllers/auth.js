@@ -4,7 +4,7 @@ import {
   refreshUserSession,
   registerUser,
   requestResetToken,
-  updateUserData,
+  resetPassword,
 } from '../services/auth.js';
 import { setupSession } from '../utils/setupSession.js';
 
@@ -63,29 +63,29 @@ export const refreshUserSessionController = async (req, res, next) => {
   });
 };
 
-export const updateUserDataController = async (req, res, next) => {
-  const {
-    body,
-    user: { _id: userId },
-    cookies: { sessionId },
-  } = req;
+// export const updateUserDataController = async (req, res, next) => {
+//   const {
+//     body,
+//     user: { _id: userId },
+//     cookies: { sessionId },
+//   } = req;
 
-  await updateUserData(body, userId);
+//   await updateUserData(body, userId);
 
-  res.json({
-    status: 200,
-    message:
-      body.newPassword || body.newEmail
-        ? 'Successfully updated user data! Please, login with your new credentials'
-        : 'Successfully updated user data!',
-  });
+//   res.json({
+//     status: 200,
+//     message:
+//       body.newPassword || body.newEmail
+//         ? 'Successfully updated user data! Please, login with your new credentials'
+//         : 'Successfully updated user data!',
+//   });
 
-  if (body.newPassword || body.newEmail) {
-    await logoutUser(sessionId);
-    res.clearCookie('sessionId');
-    res.clearCookie('refreshToken');
-  }
-};
+//   if (body.newPassword || body.newEmail) {
+//     await logoutUser(sessionId);
+//     res.clearCookie('sessionId');
+//     res.clearCookie('refreshToken');
+//   }
+// };
 
 export const resetEmailRequestController = async (req, res, next) => {
   const {
@@ -97,6 +97,17 @@ export const resetEmailRequestController = async (req, res, next) => {
   res.json({
     status: 200,
     message: 'Reset password email was successfully sent.',
+    data: {},
+  });
+};
+
+export const resetPasswordController = async (req, res, next) => {
+  const { body } = req;
+  await resetPassword(body);
+
+  res.json({
+    status: 200,
+    message: 'Password was successfully reset!',
     data: {},
   });
 };

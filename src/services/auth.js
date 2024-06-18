@@ -2,7 +2,7 @@ import createHttpError from 'http-errors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { JWT_SECRET, SMTP } from '../constants/index.js';
+import { ENV_VARS } from '../constants/index.js';
 import { UsersCollection } from '../db/models/user.js';
 import { SessionsCollection } from '../db/models/session.js';
 
@@ -59,57 +59,86 @@ export const refreshUserSession = async ({ sessionId, refreshToken }) => {
   });
 };
 
-export const logoutUser = async (sessionId) => {
-  return await SessionsCollection.deleteOne({ _id: sessionId });
-};
+export const logoutUser = async (sessionId) =>
+  await SessionsCollection.deleteOne({ _id: sessionId });
 
-export const updateUserData = async (payload, userId) => {
-  const { newName, newEmail, newPassword } = payload;
+// export const updateUserData = async (payload, userId) => {
+//   const { newName, newEmail, newPassword } = payload;
 
-  const user = await UsersCollection.findOne({ _id: userId });
-  if (!user) throw createHttpError(404, 'User not found');
+//   const user = await UsersCollection.findOne({ _id: userId });
+//   if (!user) throw createHttpError(404, 'User not found');
 
-  const isValidPassword = await bcrypt.compare(payload.password, user.password);
-  if (!isValidPassword) throw createHttpError(401, 'Unauthorized');
+//   const isValidPassword = await bcrypt.compare(payload.password, user.password);
+//   if (!isValidPassword) throw createHttpError(401, 'Unauthorized');
 
-  let updatePayload = {};
+//   let updatePayload = {};
 
-  if (newName) {
-    updatePayload.name = newName;
-  }
+//   if (newName) {
+//     updatePayload.name = newName;
+//   }
 
-  if (newEmail) {
-    updatePayload.email = newEmail;
-  }
+//   if (newEmail) {
+//     updatePayload.email = newEmail;
+//   }
 
-  if (newPassword) {
-    const encryptedPassword = await bcrypt.hash(newPassword, 10);
-    updatePayload.password = encryptedPassword;
-  }
+//   if (newPassword) {
+//     const encryptedPassword = await bcrypt.hash(newPassword, 10);
+//     updatePayload.password = encryptedPassword;
+//   }
 
-  return await UsersCollection.findOneAndUpdate(
-    { _id: userId },
-    updatePayload,
-    {
-      new: true,
-      includeResultMetadata: true,
-    },
-  );
-};
+//   return await UsersCollection.findOneAndUpdate(
+//     { _id: userId },
+//     updatePayload,
+//     {
+//       new: true,
+//       includeResultMetadata: true,
+//     },
+//   );
+// };
 
 export const requestResetToken = async (email) => {
   const user = await UsersCollection.findOne({ email });
 
   if (!user) throw createHttpError(404, 'User not found.');
 
-  const resetToken = jwt.sign({ sub: user._id, email }, env(JWT_SECRET), {
-    expiresIn: '15m',
-  });
+  const resetToken = jwt.sign(
+    { sub: user._id, email },
+    env(ENV_VARS.JWT_SECRET),
+    {
+      expiresIn: '15m',
+    },
+  );
 
   await sendMail({
-    from: env(SMTP.SMTP_FROM),
+    from: env(ENV_VARS.SMTP_FROM),
     to: email,
     subject: 'Reset your password / Contacts App',
     html: `<p>Click <a href="${resetToken}">here</a> to reset your password!</p>`,
   });
+};
+
+export const resetPassword = async (payload) => {
+  const { token, password } = payload;
+  let entries;
+
+  try {
+    entries = jwt.verify(token, env(ENV_VARS.JWT_SECRET));
+  } catch (error) {
+    if (error instanceof Error) throw createHttpError(401, error.message);
+    throw error;
+  }
+
+  const user = await UsersCollection.findOne({
+    email: entries.email,
+    _id: entries.sub,
+  });
+
+  if (!user) throw createHttpError(404, 'User not found.');
+
+  const encryptedPassword = await bcrypt.hash(password, 10);
+
+  await UsersCollection.updateOne(
+    { _id: user._id },
+    { password: encryptedPassword },
+  );
 };
