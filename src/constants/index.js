@@ -24,6 +24,7 @@ export const KEYS_OF_CONTACT = {
   email: 'email',
   isFavourite: 'isFavourite',
   contactType: 'contactType',
+  userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
 };

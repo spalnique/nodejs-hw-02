@@ -13,17 +13,15 @@ export const getAllContacts = async ({
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const contactsQuery = ContactsCollection.find({ userId });
+  // if (filter.hasOwnProperty(KEYS_OF_CONTACT.contactType))
+  //   contactsQuery.where(KEYS_OF_CONTACT.contactType).equals(filter.contactType);
 
-  if (filter.hasOwnProperty(KEYS_OF_CONTACT.contactType))
-    contactsQuery.where(KEYS_OF_CONTACT.contactType).equals(filter.contactType);
-
-  if (filter.hasOwnProperty(KEYS_OF_CONTACT.isFavourite))
-    contactsQuery.where(KEYS_OF_CONTACT.isFavourite).equals(filter.isFavourite);
+  // if (filter.hasOwnProperty(KEYS_OF_CONTACT.isFavourite))
+  //   contactsQuery.where(KEYS_OF_CONTACT.isFavourite).equals(filter.isFavourite);
 
   const [contactsCount, contacts] = await Promise.all([
-    ContactsCollection.find().merge(contactsQuery).countDocuments(),
-    contactsQuery
+    ContactsCollection.find({ ...filter, userId }).countDocuments(),
+    ContactsCollection.find({ ...filter, userId })
       .skip(skip)
       .limit(limit)
       .sort({ [sortBy]: sortOrder })
