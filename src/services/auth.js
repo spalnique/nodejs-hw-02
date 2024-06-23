@@ -9,6 +9,7 @@ import { SessionsCollection } from '../db/models/session.js';
 import { createUserSession } from '../utils/createUserSession.js';
 import { sendMail } from '../utils/sendMail.js';
 import { env } from '../utils/env.js';
+import { getMailTemplate } from '../utils/getMailTemplate.js';
 
 export const registerUser = async (payload) => {
   const isEmailInUse = await UsersCollection.findOne({ email: payload.email });
@@ -74,16 +75,21 @@ export const requestResetToken = async (email) => {
       expiresIn: '15m',
     },
   );
-
   const domain = env(ENV_VARS.APP_DOMAIN, 'http://localhost:3000/auth');
+  const { name } = user;
+  const link = `${domain}/reset-password?token=${resetToken}`;
+
+  const template = await getMailTemplate('reset-password-mail.html');
+  const html = template({ name, link });
 
   try {
     await sendMail({
       from: env(ENV_VARS.SMTP_FROM),
       to: email,
       subject: 'Reset your password / Contacts App',
-      html: `<p>Click <a href="${domain}/reset-password?token=${resetToken}">here</a> to reset your password!</p>`,
+      html,
     });
+    console.log('resetToken : ', resetToken);
   } catch (error) {
     console.error(error);
 
