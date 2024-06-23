@@ -1,7 +1,5 @@
 import nodemailer from 'nodemailer';
 
-import createHttpError from 'http-errors';
-
 import { env } from './env.js';
 import { ENV_VARS } from '../constants/index.js';
 
