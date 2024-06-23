@@ -75,7 +75,7 @@ export const requestResetToken = async (email) => {
       expiresIn: '15m',
     },
   );
-  const domain = env(ENV_VARS.APP_DOMAIN, 'http://localhost:3000/auth');
+  const domain = env(ENV_VARS.APP_DOMAIN);
   const { name } = user;
   const link = `${domain}/reset-password?token=${resetToken}`;
 

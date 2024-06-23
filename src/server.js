@@ -4,7 +4,7 @@ import pino from 'pino-http';
 import cookieParser from 'cookie-parser';
 
 import { env } from './utils/env.js';
-import { ENV_VARS } from './constants/index.js';
+import { ENV_VARS, UPLOAD_DIR } from './constants/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import router from './routers/index.js';
@@ -28,6 +28,7 @@ export function setupServer() {
       limit: '100kb',
     }),
   );
+  app.use('/uploads', express.static(UPLOAD_DIR));
 
   app.use(router);
   app.use('*', notFoundHandler);

@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import express from 'express';
+
 import {
   createContactController,
   deleteContactController,
@@ -15,6 +17,7 @@ import {
 } from '../validation/contacts.js';
 import { validateMongoId } from '../middlewares/validateId.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/multer.js';
 
 const contactsRouter = Router();
 
@@ -24,12 +27,14 @@ contactsRouter.get('/', ctrlWrapper(getAllContactsController));
 contactsRouter.get('/:id', ctrlWrapper(getContactByIdController));
 contactsRouter.post(
   '/',
+  upload.single('photo'),
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
 contactsRouter.delete('/:id', ctrlWrapper(deleteContactController));
 contactsRouter.patch(
   '/:id',
+  upload.single('photo'),
   validateBody(patchContactSchema),
   ctrlWrapper(patchContactController),
 );
