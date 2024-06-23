@@ -6,6 +6,7 @@ import {
   requestResetToken,
   resetPassword,
 } from '../services/auth.js';
+import { deleteSession } from '../utils/deleteSession.js';
 import { setupSession } from '../utils/setupSession.js';
 
 export const registerUserController = async (req, res, next) => {
@@ -40,8 +41,7 @@ export const logoutUserController = async (req, res, next) => {
 
   if (sessionId) await logoutUser(sessionId);
 
-  res.clearCookie('sessionId');
-  res.clearCookie('refreshToken');
+  deleteSession(res);
 
   res.status(204).send();
 };
@@ -80,9 +80,14 @@ export const resetEmailRequestController = async (req, res, next) => {
 export const resetPasswordController = async (req, res, next) => {
   const {
     body: { token, password },
+    cookies: { sessionId },
   } = req;
 
   await resetPassword({ token, password });
+
+  if (sessionId) await logoutUser(sessionId);
+
+  deleteSession(res);
 
   res.json({
     status: 200,
