@@ -3,7 +3,8 @@ import {
   logoutUser,
   refreshUserSession,
   registerUser,
-  updateUserData,
+  requestResetToken,
+  resetPassword,
 } from '../services/auth.js';
 import { setupSession } from '../utils/setupSession.js';
 
@@ -62,26 +63,51 @@ export const refreshUserSessionController = async (req, res, next) => {
   });
 };
 
-export const updateUserDataController = async (req, res, next) => {
+// export const updateUserDataController = async (req, res, next) => {
+//   const {
+//     body,
+//     user: { _id: userId },
+//     cookies: { sessionId },
+//   } = req;
+
+//   await updateUserData(body, userId);
+
+//   res.json({
+//     status: 200,
+//     message:
+//       body.newPassword || body.newEmail
+//         ? 'Successfully updated user data! Please, login with your new credentials'
+//         : 'Successfully updated user data!',
+//   });
+
+//   if (body.newPassword || body.newEmail) {
+//     await logoutUser(sessionId);
+//     res.clearCookie('sessionId');
+//     res.clearCookie('refreshToken');
+//   }
+// };
+
+export const resetEmailRequestController = async (req, res, next) => {
   const {
-    body,
-    user: { _id: userId },
-    cookies: { sessionId },
+    body: { email },
   } = req;
 
-  await updateUserData(body, userId);
+  await requestResetToken(email);
 
   res.json({
     status: 200,
-    message:
-      body.newPassword || body.newEmail
-        ? 'Successfully updated user data! Please, login with your new credentials'
-        : 'Successfully updated user data!',
+    message: 'Reset password email was successfully sent.',
+    data: {},
   });
+};
 
-  if (body.newPassword || body.newEmail) {
-    await logoutUser(sessionId);
-    res.clearCookie('sessionId');
-    res.clearCookie('refreshToken');
-  }
+export const resetPasswordController = async (req, res, next) => {
+  const { body } = req;
+  await resetPassword(body);
+
+  res.json({
+    status: 200,
+    message: 'Password was successfully reset!',
+    data: {},
+  });
 };

@@ -5,15 +5,16 @@ import {
   registerUserController,
   loginUserController,
   refreshUserSessionController,
-  updateUserDataController,
   logoutUserController,
+  resetEmailRequestController,
+  resetPasswordController,
 } from '../controllers/auth.js';
 import {
   loginUserSchema,
   registerUserSchema,
-  updateUserDataSchema,
-} from '../validation/users.js';
-import { authenticate } from '../middlewares/authenticate.js';
+  resetEmailRequestSchema,
+  resetPasswordSchema,
+} from '../validation/auth.js';
 
 const authRouter = Router();
 
@@ -22,22 +23,34 @@ authRouter.post(
   validateBody(registerUserSchema),
   ctrlWrapper(registerUserController),
 );
+
 authRouter.post(
   '/login',
   validateBody(loginUserSchema),
   ctrlWrapper(loginUserController),
 );
+
+authRouter.post('/refresh', ctrlWrapper(refreshUserSessionController));
+
+// authRouter.post(
+//   '/edit',
+//   authenticate,
+//   validateBody(updateUserDataSchema),
+//   ctrlWrapper(updateUserDataController),
+// );
+
+authRouter.post('/logout', ctrlWrapper(logoutUserController));
+
 authRouter.post(
-  '/refresh',
-  authenticate,
-  ctrlWrapper(refreshUserSessionController),
+  '/request-reset-email',
+  validateBody(resetEmailRequestSchema),
+  ctrlWrapper(resetEmailRequestController),
 );
+
 authRouter.post(
-  '/edit',
-  authenticate,
-  validateBody(updateUserDataSchema),
-  ctrlWrapper(updateUserDataController),
+  '/reset-password',
+  validateBody(resetPasswordSchema),
+  ctrlWrapper(resetPasswordController),
 );
-authRouter.post('/logout', authenticate, ctrlWrapper(logoutUserController));
 
 export default authRouter;
