@@ -63,30 +63,6 @@ export const refreshUserSessionController = async (req, res, next) => {
   });
 };
 
-// export const updateUserDataController = async (req, res, next) => {
-//   const {
-//     body,
-//     user: { _id: userId },
-//     cookies: { sessionId },
-//   } = req;
-
-//   await updateUserData(body, userId);
-
-//   res.json({
-//     status: 200,
-//     message:
-//       body.newPassword || body.newEmail
-//         ? 'Successfully updated user data! Please, login with your new credentials'
-//         : 'Successfully updated user data!',
-//   });
-
-//   if (body.newPassword || body.newEmail) {
-//     await logoutUser(sessionId);
-//     res.clearCookie('sessionId');
-//     res.clearCookie('refreshToken');
-//   }
-// };
-
 export const resetEmailRequestController = async (req, res, next) => {
   const {
     body: { email },
