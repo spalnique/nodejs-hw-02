@@ -10,8 +10,10 @@ export const initMongoConnection = async () => {
     const url = env(ENV_VARS.MONGODB_URL);
     const db = env(ENV_VARS.MONGODB_DB);
 
-    const connectionString = `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`;
+    // const connectionString = `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`;
+
     const newConnectionString = `mongodb://${user}:${pwd}@${url}/${db}?ssl=true&replicaSet=atlas-51tsid-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0`;
+
     await mongoose.connect(newConnectionString);
     console.log('Mongo connection successfully established!');
   } catch (error) {
