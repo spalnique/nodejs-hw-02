@@ -45,12 +45,3 @@ export const updateUserDataSchema = joi.object({
         'Password must contain at least one small and one capital letters.',
     }),
 });
-
-export const resetEmailRequestSchema = joi.object({
-  email: joi.string().email().required(),
-});
-
-export const resetPasswordSchema = joi.object({
-  password: joi.string().required(),
-  token: joi.string().required(),
-});
