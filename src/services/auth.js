@@ -62,40 +62,6 @@ export const refreshUserSession = async ({ sessionId, refreshToken }) => {
 export const logoutUser = async (sessionId) =>
   await SessionsCollection.deleteOne({ _id: sessionId });
 
-// export const updateUserData = async (payload, userId) => {
-//   const { newName, newEmail, newPassword } = payload;
-
-//   const user = await UsersCollection.findOne({ _id: userId });
-//   if (!user) throw createHttpError(404, 'User not found');
-
-//   const isValidPassword = await bcrypt.compare(payload.password, user.password);
-//   if (!isValidPassword) throw createHttpError(401, 'Unauthorized');
-
-//   let updatePayload = {};
-
-//   if (newName) {
-//     updatePayload.name = newName;
-//   }
-
-//   if (newEmail) {
-//     updatePayload.email = newEmail;
-//   }
-
-//   if (newPassword) {
-//     const encryptedPassword = await bcrypt.hash(newPassword, 10);
-//     updatePayload.password = encryptedPassword;
-//   }
-
-//   return await UsersCollection.findOneAndUpdate(
-//     { _id: userId },
-//     updatePayload,
-//     {
-//       new: true,
-//       includeResultMetadata: true,
-//     },
-//   );
-// };
-
 export const requestResetToken = async (email) => {
   const user = await UsersCollection.findOne({ email });
 
@@ -109,12 +75,23 @@ export const requestResetToken = async (email) => {
     },
   );
 
-  await sendMail({
-    from: env(ENV_VARS.SMTP_FROM),
-    to: email,
-    subject: 'Reset your password / Contacts App',
-    html: `<p>Click <a href="${resetToken}">here</a> to reset your password!</p>`,
-  });
+  const domain = env(ENV_VARS.APP_DOMAIN, 'http://localhost:3000/auth');
+
+  try {
+    await sendMail({
+      from: env(ENV_VARS.SMTP_FROM),
+      to: email,
+      subject: 'Reset your password / Contacts App',
+      html: `<p>Click <a href="${domain}/reset-password?token=${resetToken}">here</a> to reset your password!</p>`,
+    });
+  } catch (error) {
+    console.error(error);
+
+    throw createHttpError(
+      500,
+      'Failed to send the email, please try again later.',
+    );
+  }
 };
 
 export const resetPassword = async (payload) => {

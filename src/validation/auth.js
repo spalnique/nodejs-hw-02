@@ -46,7 +46,7 @@ export const updateUserDataSchema = joi.object({
     }),
 });
 
-export const resetEmailRequestSchema = joi.object({
+export const sendResetEmailSchema = joi.object({
   email: joi.string().email().required(),
 });
 

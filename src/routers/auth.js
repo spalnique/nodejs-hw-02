@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import { validateBody } from '../middlewares/validateBody.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
@@ -12,8 +13,8 @@ import {
 import {
   loginUserSchema,
   registerUserSchema,
-  resetEmailRequestSchema,
   resetPasswordSchema,
+  sendResetEmailSchema,
 } from '../validation/auth.js';
 
 const authRouter = Router();
@@ -32,18 +33,11 @@ authRouter.post(
 
 authRouter.post('/refresh', ctrlWrapper(refreshUserSessionController));
 
-// authRouter.post(
-//   '/edit',
-//   authenticate,
-//   validateBody(updateUserDataSchema),
-//   ctrlWrapper(updateUserDataController),
-// );
-
 authRouter.post('/logout', ctrlWrapper(logoutUserController));
 
 authRouter.post(
-  '/request-reset-email',
-  validateBody(resetEmailRequestSchema),
+  '/send-reset-email',
+  validateBody(sendResetEmailSchema),
   ctrlWrapper(resetEmailRequestController),
 );
 
