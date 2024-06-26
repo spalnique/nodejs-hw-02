@@ -101,21 +101,26 @@ export const requestResetToken = async (email) => {
 };
 
 export const resetPassword = async (payload) => {
-  const { token, password } = payload;
+  // const { token, password } = payload;
+  let entries;
 
   try {
-    var { email, sub: _id } = jwt.verify(token, env(ENV_VARS.JWT_SECRET));
+    // var { email, sub: _id } = jwt.verify(token, env(ENV_VARS.JWT_SECRET));
+    entries = jwt.verify(payload.token, env(ENV_VARS.JWT_SECRET));
   } catch (error) {
     if (error instanceof Error)
       throw createHttpError(401, 'Token is expired or invalid.');
     throw error;
   }
 
-  const user = await UsersCollection.findOne({ _id, email });
+  const user = await UsersCollection.findOne({
+    _id: entries.sub,
+    email: entries.email,
+  });
 
   if (!user) throw createHttpError(404, 'User not found.');
 
-  const encryptedPassword = await bcrypt.hash(password, 10);
+  const encryptedPassword = await bcrypt.hash(payload.password, 10);
 
   await UsersCollection.updateOne(
     { _id: user._id },
