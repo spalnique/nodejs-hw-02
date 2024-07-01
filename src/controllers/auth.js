@@ -72,7 +72,7 @@ export const resetEmailRequestController = async (req, res, next) => {
 
   res.json({
     status: 200,
-    message: 'Reset password email was successfully sent.',
+    message: 'Reset password email has been successfully sent.',
     data: {},
   });
 };
@@ -85,7 +85,9 @@ export const resetPasswordController = async (req, res, next) => {
 
   await resetPassword({ token, password });
 
-  if (sessionId) await logoutUser(sessionId);
+  if (sessionId) {
+    await logoutUser(sessionId);
+  }
 
   deleteSession(res);
 
