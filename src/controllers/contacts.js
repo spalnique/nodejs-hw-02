@@ -9,11 +9,7 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
-import { saveImageToUploads } from '../utils/saveImageToUploads.js';
-import { saveImageToCloudinary } from '../utils/saveImageToCloudinary.js';
-import { env } from '../utils/env.js';
-import { ENABLE_CLOUDINARY } from '../constants/index.js';
-import { saveImage } from '../utils/saveImage.js';
+import { saveImageDestination } from '../utils/saveImageDestination.js';
 
 export const getAllContactsController = async (req, res, next) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -66,7 +62,7 @@ export const createContactController = async (req, res, next) => {
     file: image,
   } = req;
 
-  const imagePath = await saveImage(image);
+  const imagePath = await saveImageDestination(image);
 
   const contact = await createContact({
     ...body,
@@ -105,7 +101,7 @@ export const patchContactController = async (req, res, next) => {
     file: image,
   } = req;
 
-  const imagePath = await saveImage(image);
+  const imagePath = await saveImageDestination(image);
 
   const contact = await updateContact(contactId, userId, {
     ...body,

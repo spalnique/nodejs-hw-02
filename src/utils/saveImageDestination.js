@@ -3,7 +3,7 @@ import { env } from './env.js';
 import { saveImageToCloudinary } from './saveImageToCloudinary.js';
 import { saveImageToUploads } from './saveImageToUploads.js';
 
-export const saveImage = async (image) => {
+export const saveImageDestination = async (image) => {
   if (!image) return;
 
   const imagePath =
